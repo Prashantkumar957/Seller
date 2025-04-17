@@ -1,0 +1,2 @@
+/media/rajanish/Local Disc/CCBUL Intership/Seller projects/seller/android/app/.cxx/Debug/2q4b6l6b/x86/CMakeFiles/edit_cache.dir
+/media/rajanish/Local Disc/CCBUL Intership/Seller projects/seller/android/app/.cxx/Debug/2q4b6l6b/x86/CMakeFiles/rebuild_cache.dir

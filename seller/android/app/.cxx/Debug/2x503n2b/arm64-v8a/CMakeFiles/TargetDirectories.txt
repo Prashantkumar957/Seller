@@ -1,0 +1,2 @@
+C:/Users/PRASHANT KUMAR/Downloads/seller_updated/seller/android/app/.cxx/Debug/2x503n2b/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/PRASHANT KUMAR/Downloads/seller_updated/seller/android/app/.cxx/Debug/2x503n2b/arm64-v8a/CMakeFiles/rebuild_cache.dir
