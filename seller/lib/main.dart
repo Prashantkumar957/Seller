@@ -9,7 +9,7 @@ import 'package:seller/views/splash_screen.dart';
 import 'package:seller/logistics/shipping/estimate_screen.dart';
 import 'app_constants.dart';
 import 'package:seller/logistics/shipping/history_screen.dart';
-
+import 'package:seller/logistics/shipping/DeliveryStatusScreen.dart';
 Future<void> main() async {
 
   AwesomeNotifications().initialize(
@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  HistoryScreen(),
+      home:  DeliveryStatusScreen(),
     );
   }
 }

@@ -13,9 +13,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
       'dateHeader': 'Jun 16 2020',
       'id': '#BAN968',
       'details': [
-        {'location': 'R.S.Puram, Coimbatore', 'date': 'Jun 16 2020'},
+        {'location': 'R.S.Puram, Coimbatore', 'date': 'Jun 16 2020', 'isDelivered': true},
         {'location': 'Basavanagudi, Bangaluru', 'date': 'Jun 16 2020'},
-        {'location': 'Delivered', 'date': 'Jun 20 2020', 'isDelivered': true},
+        {'location': 'Delivered', 'date': 'Jun 20 2020'},
       ],
       'amount': '2850',
       'weight': '3.5',
@@ -25,8 +25,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
       'id': '#BAN115',
       'details': [
         {'location': 'Sarvanampatty, Coimbatore', 'date': 'Mar 06 2020'},
-        {'location': 'IndiraNagar, Bangaluru', 'date': 'Mar 10 2020'},
-        {'location': 'Delivered', 'date': 'Mar 10 2020', 'isDelivered': true},
+        {'location': 'IndiraNagar, Bangaluru', 'date': 'Mar 10 2020', 'isDelivered': true},
+        {'location': 'Delivered', 'date': 'Mar 10 2020'},
       ],
       'amount': '2620',
       'weight': '3.2',
@@ -39,14 +39,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
         {'location': '(In transit)', 'date': null, 'isInTransit': true},
       ],
     },
+    {
+      'dateHeader': 'Jan 12 2020', // Another order for the same date to test grouping
+      'id': '#BAN873',
+      'details': [
+        {'location': 'Some Other Place', 'date': 'Jan 13 2020'},
+      ],
+    },
   ];
+
+  // Group orders by dateHeader
+  Map<String, List<Map<String, dynamic>>> _groupedOrders = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _groupOrdersByDate();
+  }
+
+  void _groupOrdersByDate() {
+    _groupedOrders = {};
+    for (var order in orders) {
+      final dateHeader = order['dateHeader'] as String;
+      if (!_groupedOrders.containsKey(dateHeader)) {
+        _groupedOrders[dateHeader] = [];
+      }
+      _groupedOrders[dateHeader]!.add(order);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(_groupedOrders);
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.amber.shade400, // Match the yellow-orange
+        backgroundColor: Colors.amber.shade400,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
@@ -89,7 +118,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.sort),
+                    icon: const Icon(Icons.filter_list),
                     onPressed: () {
                       // Handle filter/sort
                     },
@@ -110,152 +139,153 @@ class _HistoryScreenState extends State<HistoryScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: orders.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16), // Space between orders
-              itemBuilder: (context, index) {
-                final order = orders[index];
-                return Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        order['dateHeader'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+            ..._groupedOrders.keys.map((date) {
+              final orderListForDate = _groupedOrders[date]!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          date,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                         ),
+                        Text(
+                          'Order Id ${orderListForDate.first['id'] ?? 'N/A'}', // Use the first order's ID as a representative
+                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(color: Colors.grey),
+                  ...orderListForDate.map((order) {
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Order Id ${order['id']}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          // You might want to add a status here if available
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Column(
+                      margin: const EdgeInsets.only(bottom: 8.0), // Add some spacing between individual orders
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: order['details'].map<Widget>((detail) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
+                        children: [
+                          // We've already displayed the date and order ID above the group
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: (order['details'] as List<dynamic>?)?.map<Widget>((detail) {
+                              if (detail is Map<String, dynamic>) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.circle,
+                                        size: 8,
+                                        color: detail['isDelivered'] == true
+                                            ? Colors.green
+                                            : detail['isInTransit'] == true
+                                            ? Colors.amber
+                                            : Colors.orange,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          detail['location'] ?? '',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                      if (detail['date'] != null) ...[
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          detail['date']!,
+                                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            }).toList() ??
+                                [],
+                          ),
+                          const SizedBox(height: 12),
+                          if (order.containsKey('amount'))
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 16,
-                                  color: detail['isDelivered'] == true
-                                      ? Colors.green
-                                      : detail['isInTransit'] == true
-                                      ? Colors.amber
-                                      : Colors.orange,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    detail['location'],
-                                    style: const TextStyle(fontSize: 14),
+                                RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                    children: [
+                                      const TextSpan(text: 'Rs. '),
+                                      TextSpan(
+                                        text: order['amount'] ?? '0',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      const TextSpan(text: '/-'),
+                                    ],
                                   ),
                                 ),
-                                if (detail['date'] != null) ...[
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    detail['date'],
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                const SizedBox(width: 16),
+                                RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                    children: [
+                                      const TextSpan(text: 'Net Wt: '),
+                                      TextSpan(
+                                        text: '${order['weight'] ?? '0'} Kg',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ],
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 12),
-                      if (order.containsKey('amount'))
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(fontSize: 14, color: Colors.black87),
-                                children: [
-                                  const TextSpan(text: 'Rs. '),
-                                  TextSpan(
-                                    text: order['amount'],
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  const TextSpan(text: '/-'),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(fontSize: 14, color: Colors.black87),
-                                children: [
-                                  const TextSpan(text: 'Net Wt: '),
-                                  TextSpan(
-                                    text: '${order['weight']} Kg',
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                          if (order['details'] != null && order['details'].isNotEmpty && order['details'].last.containsKey('isDelivered') && order['details'].last['isDelivered'] == true) ...[
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade100,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'Delivered',
+                                  style: TextStyle(color: Colors.green, fontSize: 12),
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                      if (order['details'].last['isDelivered'] == true) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade100,
-                              borderRadius: BorderRadius.circular(4),
+                          if (order['details'] != null && order['details'].isNotEmpty && order['details'].last.containsKey('isInTransit') && order['details'].last['isInTransit'] == true) ...[
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade100,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'In transit',
+                                  style: TextStyle(color: Colors.amber, fontSize: 12),
+                                ),
+                              ),
                             ),
-                            child: const Text(
-                              'Delivered',
-                              style: TextStyle(color: Colors.green, fontSize: 12),
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (order['details'].last.containsKey('isInTransit') && order['details'].last['isInTransit'] == true) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade100,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              'In transit',
-                              style: TextStyle(color: Colors.amber, fontSize: 12),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                );
-              },
-            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+              );
+            }).toList(),
           ],
         ),
       ),
