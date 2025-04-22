@@ -24,10 +24,10 @@ class _OnboardingPagerState extends State<OnboardingPager> {
       'image': 'assets/images/up.png',
     },
     {
-      'title': 'Share Location',
-      'description':
-      'Quickly share your live location with others for smooth meetups, enhanced safety, and effortless coordination.',
-      'image': 'assets/images/loc.png',
+      // 'title': 'Share Location',
+      // 'description':
+      // 'Quickly share your live location with others for smooth meetups, enhanced safety, and effortless coordination.',
+      // 'image': 'assets/images/lc.png',
     },
   ];
 
@@ -36,7 +36,7 @@ class _OnboardingPagerState extends State<OnboardingPager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2F47D6), // Deep blue background
+      backgroundColor: Colors.white, // Deep blue background
       body: Stack(
         children: [
           PageView.builder(
@@ -73,7 +73,7 @@ class _OnboardingPagerState extends State<OnboardingPager> {
                                 TextSpan(
                                   text: data['title'],
                                   style: TextStyle(
-                                    color: Colors.indigo[900],
+                                    color: Colors.blue[900],
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -94,7 +94,7 @@ class _OnboardingPagerState extends State<OnboardingPager> {
                       ),
                       Image.asset(
                         data['image'],
-                        height: 180,
+                        height: 480,
                         fit: BoxFit.contain,
                       ),
                     ],
