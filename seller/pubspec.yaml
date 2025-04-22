@@ -114,11 +114,14 @@ flutter:
     - assets/images/splash_screen.gif
     - assets/background/
     - assets/placeholder/
+    - assets/images/
     - assets/package1.png
     - assets/package2.png
     - assets/package3.png
     - assets/package4.png
-
+    - assets/images/connections.png
+    - assets/images/up.png
+    - assets/images/loc.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

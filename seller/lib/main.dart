@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutx/flutx.dart';
 import 'package:provider/provider.dart';
+import 'package:seller/onboarding/onboaarding.dart';
+import 'package:seller/logistics/shipping/search.dart';
 import 'package:seller/theme/app_notifier.dart';
 import 'package:seller/theme/app_theme.dart';
 import 'package:seller/views/splash_screen.dart';
@@ -80,7 +82,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  DeliveryStatusScreen(),
+      home:  OnboardingPager(),
     );
   }
 }
